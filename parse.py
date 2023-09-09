@@ -7,7 +7,7 @@ def text_parse(output_file):
     whitelist = []
 
     # Read the whitelist from the text file
-    with open('serie.txt', 'r') as whitelist_file:
+    with open('seriebuletin.txt', 'r') as whitelist_file:
         for line in whitelist_file:
             word = line.strip()  # Remove leading/trailing whitespace
             whitelist.append(word)
@@ -20,6 +20,7 @@ def text_parse(output_file):
     data_nastere = None
     data_valabilitate = None
     emis_de = None 
+    nume = None
 
     prev_line = None  # Store the previous line
 
@@ -99,6 +100,7 @@ def text_parse(output_file):
         "Data eliberarii": data_eliberarii,
         "Data expirarii": data_expirarii,
         "Emis de": emis_de,
+        "Nume": nume
     }
 
     # Convert the dictionary to JSON
