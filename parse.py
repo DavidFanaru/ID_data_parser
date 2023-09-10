@@ -123,3 +123,4 @@ def text_parse(output_file):
     with open('output.json', 'w') as json_file:
         json_file.write(output_json)
 
+
