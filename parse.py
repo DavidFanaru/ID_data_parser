@@ -21,6 +21,7 @@ def text_parse(output_file):
     data_valabilitate = None
     emis_de = None 
     nume = None
+    serienumar = None  # Initialize serienumar
 
     prev_line = None  # Store the previous line
 
@@ -87,10 +88,22 @@ def text_parse(output_file):
                 # Remove all periods from the "Emis de" string
                 emis_de = emis_de.replace(".", "")
                 break  # Stop reading lines if "Emis de" is found
+            
+            # Check if the line, converted to lowercase, starts with "idrou"
+            if line.lower().startswith("idrou"):
+                # Store the next line as serienumar
+                next_line = next(file)
+                serienumar = next_line.strip()
 
             prev_line = line  # Store the current line as the previous line
 
-    # Convert the matched words, codes, sex, data_nastere, date range, and "Emis de" to a dictionary
+    # Set "serie" to the first 2 characters of "serienumar" if "serie" is None
+    if serie is None and serienumar:
+        serie = serienumar[:2]
+    if numar is None and serienumar:
+        numar = serienumar[2:8]
+
+    # Convert the matched words, codes, sex, data_nastere, date range, "Emis de," and "serienumar" to a dictionary
     result_dict = {
         "Serie": serie,
         "Numar": numar,
@@ -100,7 +113,7 @@ def text_parse(output_file):
         "Data eliberarii": data_eliberarii,
         "Data expirarii": data_expirarii,
         "Emis de": emis_de,
-        "Nume": nume
+        "Nume": nume,
     }
 
     # Convert the dictionary to JSON
@@ -110,4 +123,3 @@ def text_parse(output_file):
     with open('output.json', 'w') as json_file:
         json_file.write(output_json)
 
-        
