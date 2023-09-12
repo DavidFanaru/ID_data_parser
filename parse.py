@@ -5,6 +5,12 @@ def text_parse(output_file):
 
     # Initialize a list to store the whitelisted 2-letter words
     whitelist = []
+    
+    capital_letters_pattern = r'^[A-ZÀ-ȕ]+$'
+    pattern = re.compile('[A-ZȘȚÂĂÎ]', re.UNICODE)
+    romanian_pattern = re.compile(r'[ȘȚÂĂÎa-zA-Z]*[ȘȚÂĂÎ][ȘȚÂĂÎa-zA-Z]*')
+    test_pattern = r'\b\w*[Â]\w*\b'
+ 
 
     # Read the whitelist from the text file
     with open('seriebuletin.txt', 'r') as whitelist_file:
@@ -21,9 +27,17 @@ def text_parse(output_file):
     data_valabilitate = None
     emis_de = None 
     nume = None
+    prenume = None
     serienumar = None  # Initialize serienumar
+    data_eliberarii = None
+    data_expirarii  = None
 
-    prev_line = None  # Store the previous line
+    cnp_line = None  # Store the previous line
+    nume_line = None
+    prev_line = None
+    nume_test = None
+    prenume_test = None
+    
 
     # Open and read the entire text file line by line
     with open(output_file, 'r') as file:
@@ -82,12 +96,14 @@ def text_parse(output_file):
                     data_eliberarii_parts[2] = f"20{data_eliberarii_parts[2]}"
                     data_eliberarii = '-'.join(data_eliberarii_parts)
 
-            # Extract "Emis de" from the previous line
-            if data_valabilitate and prev_line:
+    with open(output_file, 'r') as file:
+        for line in file:
+
+            # Check if the current line contains the pattern "data_valabilitate"
+            if data_valabilitate in line:
                 emis_de = prev_line.strip()
-                # Remove all periods from the "Emis de" string
                 emis_de = emis_de.replace(".", "")
-                break  # Stop reading lines if "Emis de" is found
+
             
             # Check if the line, converted to lowercase, starts with "idrou"
             if line.lower().startswith("idrou"):
@@ -96,6 +112,34 @@ def text_parse(output_file):
                 serienumar = next_line.strip()
 
             prev_line = line  # Store the current line as the previous line
+
+    with open(output_file, 'r') as file:
+        for line in file:
+            if cnp in line:
+                cnp_line = True
+            if cnp_line:
+                nume_test = line.strip()
+
+                # Test if "nume_test" contains only capital letters (including "ȘȚÂĂÎ") and no digits
+                if nume_test.isupper() and not re.search(r'\d', nume_test):
+                    nume = nume_test
+                    break  # Exit the loop as we found a valid "nume"
+
+
+    with open(output_file, 'r') as file:
+        for line in file:
+            if nume_line:
+                prenume_test = line.strip()
+                print(prenume_test)
+
+                # Test if "nume_test" contains only capital letters (including "ȘȚÂĂÎ") and no digits
+                if prenume_test.isupper():
+                    prenume = prenume_test
+                    break  # Exit the loop as we found a valid "nume"
+                
+            if nume in line:
+                nume_line = True
+                        
 
     # Set "serie" to the first 2 characters of "serienumar" if "serie" is None
     if serie is None and serienumar:
@@ -113,11 +157,13 @@ def text_parse(output_file):
         "Data eliberarii": data_eliberarii,
         "Data expirarii": data_expirarii,
         "Emis de": emis_de,
+        "SerieNumar": serienumar,
         "Nume": nume,
+        "Prenume": prenume
     }
 
     # Convert the dictionary to JSON
-    output_json = json.dumps(result_dict, indent=4)
+    output_json = json.dumps(result_dict, indent=4, ensure_ascii=False)
 
     # Save the JSON data to a file
     with open('output.json', 'w') as json_file:
