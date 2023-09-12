@@ -25,6 +25,7 @@ def text_parse(output_file):
     serienumar = None  # Initialize serienumar
     data_eliberarii = None
     data_expirarii  = None
+    domiciliu = None
 
     cnp_line = None  # Store the previous line
     nume_line = None
@@ -124,7 +125,6 @@ def text_parse(output_file):
         for line in file:
             if nume_line:
                 prenume_test = line.strip()
-                print(prenume_test)
 
                 # Test if "nume_test" contains only capital letters (including "ȘȚÂĂÎ") and no digits
                 if prenume_test.isupper():
@@ -133,6 +133,20 @@ def text_parse(output_file):
 
             if nume in line:
                 nume_line = True
+
+                
+    with open(output_file, 'r') as file:
+        for line in file:
+            if 'domiciliu' in line.lower() or 'adresse' in line.lower() or 'address' in line.lower():
+                print(line)
+                next_line = next(file)
+                print(next_line)
+                domiciliu = next_line
+                next_line = next(file)
+                print(next_line)
+                domiciliu = domiciliu + next_line 
+                break
+
                         
 
     # Set "serie" to the first 2 characters of "serienumar" if "serie" is None
@@ -152,7 +166,8 @@ def text_parse(output_file):
         "Data expirarii": data_expirarii,
         "Emis de": emis_de,
         "Nume": nume,
-        "Prenume": prenume
+        "Prenume": prenume,
+        "Domiciliu": domiciliu
     }
 
     # Convert the dictionary to JSON
