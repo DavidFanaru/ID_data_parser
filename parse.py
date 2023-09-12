@@ -151,7 +151,6 @@ def text_parse(output_file):
         "Data eliberarii": data_eliberarii,
         "Data expirarii": data_expirarii,
         "Emis de": emis_de,
-        "SerieNumar": serienumar,
         "Nume": nume,
         "Prenume": prenume
     }
