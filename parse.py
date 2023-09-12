@@ -5,12 +5,6 @@ def text_parse(output_file):
 
     # Initialize a list to store the whitelisted 2-letter words
     whitelist = []
-    
-    capital_letters_pattern = r'^[A-ZÀ-ȕ]+$'
-    pattern = re.compile('[A-ZȘȚÂĂÎ]', re.UNICODE)
-    romanian_pattern = re.compile(r'[ȘȚÂĂÎa-zA-Z]*[ȘȚÂĂÎ][ȘȚÂĂÎa-zA-Z]*')
-    test_pattern = r'\b\w*[Â]\w*\b'
- 
 
     # Read the whitelist from the text file
     with open('seriebuletin.txt', 'r') as whitelist_file:
@@ -136,7 +130,7 @@ def text_parse(output_file):
                 if prenume_test.isupper():
                     prenume = prenume_test
                     break  # Exit the loop as we found a valid "nume"
-                
+
             if nume in line:
                 nume_line = True
                         
