@@ -51,9 +51,12 @@ def process_data():
 
         # Send output.json back to the request
         if os.path.exists('output.json'):
-            return send_file('output.json', as_attachment=True, download_name='output.json'), 200
+            response = send_file('output.json', as_attachment=True, download_name='output.json'), 200
+            os.remove('output.json')
+            return response, 200
         else:
             return jsonify({'error': 'output.json not found'}), 404
+        
         
         # return jsonify({'message': 'Data processed successfully'}), 200
 
