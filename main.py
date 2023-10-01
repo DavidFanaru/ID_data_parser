@@ -1,40 +1,59 @@
 import easyocr
 import cv2
+import os
 import parse
+import convert
 
-# Initialize the EasyOCR Reader with the Romanian language
-reader = easyocr.Reader(['ro'])
+# Constants
+png_output = 'output.png'
+output_file = 'output.txt'
 
-# Replace 'your_image.jpg' with the path to your image file
-image_path = cv2.imread("scancolor.png", 0) 
+def start_ocr(photobyte):
+    try:
+        # Convert byte_array to PNG and save it as output.png
+        convert.bytearray_to_png(photobyte)
 
-# Read text from the image
-results = reader.readtext(image_path)
+        # Initialize the EasyOCR Reader with the Romanian language
+        reader = easyocr.Reader(['ro'])
 
-# Create a TXT file to store the extracted text
-output_file = 'output_test.txt'
+        # Replace 'output.png' with the path to your image file
+        image_path = cv2.imread(png_output, 0) 
 
-# Open the file in write mode and save the extracted text
-with open(output_file, 'w', encoding='utf-8') as file:
-    for detection in results:
-        # text, confidence = detection[1], detection[2]
-        # file.write(f"Text: {text}, Confidence: {confidence}\n")
-        text = detection[1]
-        file.write(f"{text}\n")
+        # Read text from the image
+        results = reader.readtext(image_path)
 
-# Read the content of the file
-with open(output_file, 'r') as file:
-    file_content = file.read()
+        # Open the file in write mode and save the extracted text
+        with open(output_file, 'w', encoding='utf-8') as file:
+            for detection in results:
+                # # text, confidence = detection[1], detection[2]
+                # # file.write(f"Text: {text}, Confidence: {confidence}\n")
+                text = detection[1]
+                file.write(f"{text}\n")
 
-# Remove "[" and "]" characters from the content
-modified_content = file_content.replace('[', '').replace(']', '')
+        # Read the content of the file
+        with open(output_file, 'r') as file:
+            file_content = file.read()
 
-# Open the file for writing (this clears its content)
-with open(output_file, 'w') as file:
-    # Write the modified content back to the file
-    file.write(modified_content)
+        # Remove "[" and "]" characters from the content
+        modified_content = file_content.replace('[', '').replace(']', '')
 
-parse.text_parse(output_file)
+        # Open the file for writing (this clears its content)
+        with open(output_file, 'w') as file:
+            # Write the modified content back to the file
+            file.write(modified_content)
 
-print(f"Extracted text saved to {output_file}")
+        # Use text_parse function from parse.py to parse the text from the output.txt
+        parse.text_parse(output_file)
+
+        os.remove(png_output)
+        os.remove(output_file)
+
+    except KeyboardInterrupt:
+        print("Conversion was interrupted.")
+    except FileNotFoundError:
+        print("File not found.")
+    except cv2.error as e:
+        print(f"OpenCV Error: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 

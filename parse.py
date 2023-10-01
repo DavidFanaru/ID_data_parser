@@ -3,7 +3,7 @@ import json
 
 def text_parse(output_file):
 
-    # Initialize a list to store the whitelisted 2-letter words
+    # Initialize a list to store the whitelisted ID SERIES
     whitelist = []
 
     # Read the whitelist from the text file
@@ -12,7 +12,7 @@ def text_parse(output_file):
             word = line.strip()  # Remove leading/trailing whitespace
             whitelist.append(word)
 
-    # Initialize variables to store the matched 2-letter word, 6-digit code, 13-digit code, sex, data_nastere, date range, and "Emis de"
+    # Initialize variables to store the matched credentials
     serie = None
     numar = None    
     cnp = None
@@ -22,12 +22,13 @@ def text_parse(output_file):
     emis_de = None 
     nume = None
     prenume = None
-    serienumar = None  # Initialize serienumar
+    serienumar = None  
     data_eliberarii = None
     data_expirarii  = None
     domiciliu = None
 
-    cnp_line = None  # Store the previous line
+    # Store the previous line
+    cnp_line = None  
     nume_line = None
     prev_line = None
     nume_test = None
@@ -138,12 +139,9 @@ def text_parse(output_file):
     with open(output_file, 'r') as file:
         for line in file:
             if 'domiciliu' in line.lower() or 'adresse' in line.lower() or 'address' in line.lower():
-                print(line)
                 next_line = next(file)
-                print(next_line)
                 domiciliu = next_line
                 next_line = next(file)
-                print(next_line)
                 domiciliu = domiciliu + next_line 
                 break
 
