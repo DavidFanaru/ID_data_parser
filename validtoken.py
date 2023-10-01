@@ -1,7 +1,8 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_file
 import jwt
 import datetime
 import main  # Import your main module here
+import os
 
 # Constants
 SECRET_KEY = 'asdfgh'
@@ -45,9 +46,16 @@ def process_data():
         jwt_token = json_data['authentificationData']['token']
         jwt_payload = validate_jwt(jwt_token)
 
-        # main.start_ocr()  # Call the startmain method from main.py
+        # Call the startmain method from main.py
+        main.start_ocr()  
 
-        return jsonify({'message': 'Data processed successfully'}), 200
+        # Send output.json back to the request
+        if os.path.exists('output.json'):
+            return send_file('output.json', as_attachment=True, download_name='output.json'), 200
+        else:
+            return jsonify({'error': 'output.json not found'}), 404
+        
+        # return jsonify({'message': 'Data processed successfully'}), 200
 
     except TokenExpiredError:
         return jsonify({'error': 'JWT is expired'}), 401
